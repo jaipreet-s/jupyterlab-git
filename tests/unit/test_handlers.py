@@ -1,5 +1,5 @@
 import pytest
-from mock import Mock
+from mock import Mock, ANY
 
 from jupyterlab_git import handlers
 
@@ -10,3 +10,5 @@ def test_mapping_added():
         'base_url': 'nb_base_url'
     }
     handlers.setup_handlers(mock_web_app)
+
+    mock_web_app.add_handlers.assert_called_once_with(".*", ANY)
