@@ -55,6 +55,9 @@ export type IDiffCallback = (
 export class GitExtension implements IGitExtension {
   git_plugin: GitWidget;
   constructor(app: JupyterLab, restorer: ILayoutRestorer) {
+
+      const toolbar = document.getElementsByClassName('p-Widget jp-Toolbar jp-FileBrowser-toolbar');
+      console.log('Toolbar from index.ts', toolbar);
     this.git_plugin = new GitWidget(
       app,
       { manager: app.serviceManager },
@@ -128,5 +131,6 @@ function activate(
   });
   menu.addItem({ type: 'submenu', submenu: tutorial });
   mainMenu.addMenu(menu, { rank: 60 });
+
   return git_extension;
 }

@@ -16,6 +16,8 @@ import { GitPanel } from './GitPanel';
 
 import { gitWidgetStyle } from '../componentsStyle/GitWidgetStyle';
 
+import {GitClone} from '../gitClone'
+
 import '../../style/variables.css';
 
 /**
@@ -74,7 +76,19 @@ export class GitWidget extends Widget {
     const element = <GitPanel app={app} diff={diff_function} />;
     this.component = ReactDOM.render(element, this.node);
     this.component.refresh();
+
+    this.addGitClone()
+
   }
+
+    private addGitClone() {
+        let foo = this.node.getElementsByClassName('p-Widget jp-Toolbar jp-FileBrowser-toolbar')
+        console.log('FOONODE', foo);
+        let toolbar = document.getElementsByClassName('p-Widget jp-Toolbar jp-FileBrowser-toolbar')[0]
+        console.log(toolbar)
+        let gc = new GitClone();
+        console.log(gc)
+    }
 
   /**
    * Override widget's default show() to 
