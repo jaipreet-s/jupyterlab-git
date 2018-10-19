@@ -49,7 +49,7 @@ export class GitClone extends Widget {
         });
         this.fileBrowser.toolbar.addItem('gitClone', this.cloneButton);
 
-        // Attached a listener on the refreshed event.
+        // Attached a listener on the pathChanged event.
         factory.defaultBrowser.model.pathChanged.connect(() => this.disableIfInGitDirectory());
 
         // Create the elements for the Git button toggling
@@ -71,10 +71,8 @@ export class GitClone extends Widget {
             this.fileBrowser.model.path
         ).then(response => {
                 if (response.code == 0) {
-                    console.log('Check if inside Git repo YES');
                     this.cloneButton.node.firstChild.firstChild.replaceWith(this.disabledGitButton);
                 } else {
-                    console.log('Check if inside Git repo NO');
                     this.cloneButton.node.firstChild.firstChild.replaceWith(this.enabledGitButton);
                 }
             }
