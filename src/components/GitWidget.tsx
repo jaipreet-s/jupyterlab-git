@@ -19,6 +19,7 @@ import { gitWidgetStyle } from '../componentsStyle/GitWidgetStyle';
 import { IDiffCallback } from '../git';
 
 import '../../style/variables.css';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 /**
  * An options object for creating a running sessions widget.
@@ -68,12 +69,19 @@ export class GitWidget extends Widget {
   /**
    * Construct a new running widget.
    */
-  constructor(app: JupyterLab, options: IOptions, diffFunction: IDiffCallback) {
+  constructor(
+    app: JupyterLab,
+    options: IOptions,
+    diffFunction: IDiffCallback,
+    renderMime: IRenderMimeRegistry
+  ) {
     super({
       node: (options.renderer || defaultRenderer).createNode()
     });
     this.addClass(gitWidgetStyle);
-    const element = <GitPanel app={app} diff={diffFunction} />;
+    const element = (
+      <GitPanel app={app} diff={diffFunction} renderMime={renderMime} />
+    );
     this.component = ReactDOM.render(element, this.node);
     this.component.refresh();
   }
