@@ -27,6 +27,7 @@ import {
   panelWarningStyle,
   findRepoButtonStyle
 } from '../componentsStyle/GitPanelStyle';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 /** Interface for GitPanel component state */
 export interface IGitSessionNodeState {
@@ -54,6 +55,7 @@ export interface IGitSessionNodeState {
 export interface IGitSessionNodeProps {
   app: JupyterLab;
   diff: IDiffCallback;
+  renderMime: IRenderMimeRegistry;
 }
 
 /** A React component for the git extension's main display */
@@ -256,6 +258,7 @@ export class GitPanel extends React.Component<
                 refresh={this.refresh}
                 diff={this.props.diff}
                 sideBarExpanded={this.state.sideBarExpanded}
+                renderMime={this.props.renderMime}
               />
             </div>
           )}

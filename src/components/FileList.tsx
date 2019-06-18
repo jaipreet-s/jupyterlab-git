@@ -1,41 +1,40 @@
-import { Dialog, showDialog } from '@jupyterlab/apputils';
-
 import { JupyterLab } from '@jupyterlab/application';
-
+import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { nbformat, PathExt } from '@jupyterlab/coreutils';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { ServerConnection } from '@jupyterlab/services/lib/serverconnection';
 import { Menu } from '@phosphor/widgets';
-
-import { PathExt } from '@jupyterlab/coreutils';
-
-import { Git, IGitShowPrefixResult } from '../git';
-
+import { IDiffEntry } from 'nbdime/lib/diff/diffentries';
+import { NotebookDiffModel } from 'nbdime/lib/diff/model';
+import { NotebookDiffWidget } from 'nbdime/lib/diff/widget';
+import * as React from 'react';
+// import {  CellDiffWidget, NotebookDiffModel } from 'nbdime';
 import {
-  moveFileUpButtonStyle,
+  folderFileIconSelectedStyle,
+  folderFileIconStyle,
+  genericFileIconSelectedStyle,
+  genericFileIconStyle,
+  imageFileIconSelectedStyle,
+  imageFileIconStyle,
+  jsonFileIconSelectedStyle,
+  jsonFileIconStyle,
+  kernelFileIconSelectedStyle,
+  kernelFileIconStyle,
+  markdownFileIconSelectedStyle,
+  markdownFileIconStyle,
+  moveFileDownButtonSelectedStyle,
   moveFileDownButtonStyle,
   moveFileUpButtonSelectedStyle,
-  moveFileDownButtonSelectedStyle,
-  folderFileIconStyle,
-  genericFileIconStyle,
-  yamlFileIconStyle,
-  markdownFileIconStyle,
-  imageFileIconStyle,
-  spreadsheetFileIconStyle,
-  jsonFileIconStyle,
-  pythonFileIconStyle,
-  kernelFileIconStyle,
-  folderFileIconSelectedStyle,
-  genericFileIconSelectedStyle,
-  yamlFileIconSelectedStyle,
-  markdownFileIconSelectedStyle,
-  imageFileIconSelectedStyle,
-  spreadsheetFileIconSelectedStyle,
-  jsonFileIconSelectedStyle,
+  moveFileUpButtonStyle,
   pythonFileIconSelectedStyle,
-  kernelFileIconSelectedStyle
+  pythonFileIconStyle,
+  spreadsheetFileIconSelectedStyle,
+  spreadsheetFileIconStyle,
+  yamlFileIconSelectedStyle,
+  yamlFileIconStyle
 } from '../componentsStyle/FileListStyle';
-
+import { Git, httpGitRequest, IGitShowPrefixResult } from '../git';
 import { GitStage } from './GitStage';
-
-import * as React from 'react';
 
 export namespace CommandIDs {
   export const gitFileOpen = 'gf:Open';
@@ -44,6 +43,7 @@ export namespace CommandIDs {
   export const gitFileTrack = 'gf:Track';
   export const gitFileUntrack = 'gf:Untrack';
   export const gitFileDiscard = 'gf:Discard';
+  export const gitFileDiff = 'gf:Diff';
 }
 
 export interface IFileListState {
@@ -79,6 +79,7 @@ export interface IFileListProps {
   refresh: any;
   sideBarExpanded: boolean;
   display: boolean;
+  renderMime: IRenderMimeRegistry;
 }
 
 export class FileList extends React.Component<IFileListProps, IFileListState> {
@@ -130,6 +131,27 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
         }
       });
     }
+
+    if (!commands.hasCommand(CommandIDs.gitFileDiff)) {
+      commands.addCommand(CommandIDs.gitFileDiff, {
+        label: 'Diff',
+        caption: 'Diff selected file',
+        execute: () => {
+          try {
+            this.openDiffView(
+              this.state.contextMenuFile,
+              this.props.app,
+              'HEAD',
+              'WORKING',
+              this.props.renderMime
+            );
+          } catch (err) {
+            console.log('An error occured');
+          }
+        }
+      });
+    }
+
     if (!commands.hasCommand(CommandIDs.gitFileStage)) {
       commands.addCommand(CommandIDs.gitFileStage, {
         label: 'Stage',
@@ -145,6 +167,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
         }
       });
     }
+
     if (!commands.hasCommand(CommandIDs.gitFileTrack)) {
       commands.addCommand(CommandIDs.gitFileTrack, {
         label: 'Track',
@@ -204,6 +227,9 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
     });
     this.state.contextMenuUnstaged.addItem({
       command: CommandIDs.gitFileDiscard
+    });
+    this.state.contextMenuUnstaged.addItem({
+      command: CommandIDs.gitFileDiff
     });
 
     this.state.contextMenuUntracked.addItem({
@@ -301,6 +327,35 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
   updateSelectedStage = (stage: string): void => {
     this.setState({ selectedStage: stage });
   };
+
+  async openDiffView(
+    path: string,
+    app: JupyterLab,
+    prevRef: string,
+    currRef: string,
+    renderMime: IRenderMimeRegistry,
+    files?: string | Array<string>
+  ) {
+    try {
+      let response = await httpGitRequest('/nbdime/api/gitdiff', 'POST', {
+        file_name: path,
+        ref_prev: 'HEAD',
+        ref_curr: 'WORKING'
+      });
+      const data = await response.json();
+      if (response.status !== 200) {
+        throw new ServerConnection.ResponseError(response, data.message);
+      }
+      let base = data['base'] as nbformat.INotebookContent;
+      let diff = (data['diff'] as any) as IDiffEntry[];
+      let nbdModel = new NotebookDiffModel(base, diff);
+      let nbdWidget = new NotebookDiffWidget(nbdModel, renderMime);
+      console.log(`nbdiff widget ${nbdWidget.activate()}`);
+      app.shell.addToMainArea(nbdWidget);
+    } catch (err) {
+      throw ServerConnection.NetworkError;
+    }
+  }
 
   /** Open a file in the git listing */
   async openListedFile(
