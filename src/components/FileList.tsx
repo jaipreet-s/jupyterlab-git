@@ -1,15 +1,10 @@
 import { JupyterLab } from '@jupyterlab/application';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
-import { nbformat, PathExt } from '@jupyterlab/coreutils';
+import { PathExt } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-import { ServerConnection } from '@jupyterlab/services/lib/serverconnection';
 import { Menu } from '@phosphor/widgets';
-import { IDiffEntry } from 'nbdime/lib/diff/diffentries';
-import { NotebookDiffModel } from 'nbdime/lib/diff/model';
-import { NotebookDiffWidget } from 'nbdime/lib/diff/widget';
-import { NBDiffWidget } from '../components/diff/NbDiffWidget';
 import * as React from 'react';
-// import {  CellDiffWidget, NotebookDiffModel } from 'nbdime';
+import { NBDiffWidget } from '../components/diff/NbDiffWidget';
 import {
   folderFileIconSelectedStyle,
   folderFileIconStyle,
@@ -34,7 +29,7 @@ import {
   yamlFileIconSelectedStyle,
   yamlFileIconStyle
 } from '../componentsStyle/FileListStyle';
-import { Git, httpGitRequest, IGitShowPrefixResult } from '../git';
+import { Git, IGitShowPrefixResult } from '../git';
 import { GitStage } from './GitStage';
 
 export namespace CommandIDs {
@@ -337,28 +332,9 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
     renderMime: IRenderMimeRegistry,
     files?: string | Array<string>
   ) {
-    try {
-      let response = await httpGitRequest('/nbdime/api/gitdiff', 'POST', {
-        file_name: path,
-        ref_prev: 'HEAD',
-        ref_curr: 'WORKING'
-      });
-      const data = await response.json();
-      if (response.status !== 200) {
-        throw new ServerConnection.ResponseError(response, data.message);
-      }
-      let base = data['base'] as nbformat.INotebookContent;
-      let diff = (data['diff'] as any) as IDiffEntry[];
-      let nbdModel = new NotebookDiffModel(base, diff);
-      let nbdWidget = new NotebookDiffWidget(nbdModel, renderMime);
-      console.log(`nbdiff widget ${nbdWidget}`);
-
-      const nbDiffWidget = new NBDiffWidget();
-      app.shell.addToMainArea(nbDiffWidget);
-      app.shell.activateById(nbDiffWidget.id);
-    } catch (err) {
-      throw ServerConnection.NetworkError;
-    }
+    const nbDiffWidget = new NBDiffWidget(renderMime);
+    app.shell.addToMainArea(nbDiffWidget);
+    app.shell.activateById(nbDiffWidget.id);
   }
 
   /** Open a file in the git listing */
