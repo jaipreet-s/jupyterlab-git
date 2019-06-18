@@ -7,6 +7,7 @@ import { Menu } from '@phosphor/widgets';
 import { IDiffEntry } from 'nbdime/lib/diff/diffentries';
 import { NotebookDiffModel } from 'nbdime/lib/diff/model';
 import { NotebookDiffWidget } from 'nbdime/lib/diff/widget';
+import { NBDiffWidget } from '../components/diff/NbDiffWidget';
 import * as React from 'react';
 // import {  CellDiffWidget, NotebookDiffModel } from 'nbdime';
 import {
@@ -350,8 +351,11 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
       let diff = (data['diff'] as any) as IDiffEntry[];
       let nbdModel = new NotebookDiffModel(base, diff);
       let nbdWidget = new NotebookDiffWidget(nbdModel, renderMime);
-      console.log(`nbdiff widget ${nbdWidget.activate()}`);
-      app.shell.addToMainArea(nbdWidget);
+      console.log(`nbdiff widget ${nbdWidget}`);
+
+      const nbDiffWidget = new NBDiffWidget();
+      app.shell.addToMainArea(nbDiffWidget);
+      app.shell.activateById(nbDiffWidget.id);
     } catch (err) {
       throw ServerConnection.NetworkError;
     }
