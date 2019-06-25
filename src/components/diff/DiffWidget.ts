@@ -1,11 +1,12 @@
 import { nbformat, Private } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { ServerConnection } from '@jupyterlab/services/lib/serverconnection';
-import { Widget } from '@phosphor/widgets';
+import { Widget, Panel } from '@phosphor/widgets';
 import { IDiffEntry } from 'nbdime/lib/diff/diffentries';
 import { NotebookDiffModel } from 'nbdime/lib/diff/model';
-import { NotebookDiffWidget } from 'nbdime/lib/diff/widget';
+import { NotebookDiffWidget, CellDiffWidget } from 'nbdime/lib/diff/widget';
 import { httpGitRequest } from '../../git';
+import { ModelDB } from '@jupyterlab/observables';
 
 export interface INBDiffState {
   nbdModel: NotebookDiffModel | undefined;
@@ -48,18 +49,47 @@ export class DiffWidget extends Widget {
           let base = data['base'] as nbformat.INotebookContent;
           let diff = (data['diff'] as any) as IDiffEntry[];
           let nbdModel = new NotebookDiffModel(base, diff);
-          let nbdWidget = new NotebookDiffWidget(
-            nbdModel,
-            this.props.renderMime
-          );
+          let nbdWidget = new Panel();
+          nbdWidget.addClass('jp-Notebook-diff');
+
+          for (let i = 0; i < nbdModel.chunkedCells.length; i++) {
+            const chunk = nbdModel.chunkedCells[i];
+            if (chunk.length === 1 && !(chunk[0].added || chunk[0].deleted)) {
+              nbdWidget.addWidget(
+                new CellDiffWidget(
+                  chunk[0],
+                  this.props.renderMime,
+                  nbdModel.mimetype
+                )
+              );
+            } else {
+              // This is the case for Added/removed/modified.
+              let chunkPanel = new Panel();
+              chunkPanel.addClass('jp-Diff-addremchunk');
+              let addedPanel = new Panel();
+              addedPanel.addClass('jp-Diff-addedchunk');
+              let removedPanel = new Panel();
+              removedPanel.addClass('jp-Diff-removedchunk');
+              for (let j = 0; j < chunk.length; j++) {
+                let cell = chunk[j];
+                let target = cell.deleted ? removedPanel : addedPanel;
+                target.addWidget(
+                  new CellDiffWidget(
+                    cell,
+                    this.props.renderMime,
+                    nbdModel.mimetype
+                  )
+                );
+              }
+              chunkPanel.addWidget(addedPanel);
+              chunkPanel.addWidget(removedPanel);
+              nbdWidget.addWidget(chunkPanel);
+            }
+          }
+
           this.node.appendChild(nbdWidget.node);
-          nbdWidget.init().then(() => {
-            console.log('NBDime initted');
-            // this.node.appendChild(nbdWidget.node);
-            console.log('NBDime chld added');
-            this.markUnchangedRanges(this.node);
-            console.log('unchanged ranges marked');
-          });
+          this.markUnchangedRanges(this.node);
+          console.log('unchanged ranges marked');
         });
       });
     } catch (err) {
