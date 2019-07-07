@@ -46,3 +46,11 @@
   --jp-icon-plus: url('./images/plus-white.svg');
   --jp-icon-rewind: url('./images/rewind-white.svg');
 }
+
+.CodeMirror-gutter.CodeMirror-linenumbers[style] {
+  width: 29px !important;
+}
+
+.CodeMirror-sizer[style] {
+  margin-left: 47px !important;
+}
