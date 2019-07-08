@@ -6,17 +6,26 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 export class NBDiffWidget extends Widget {
   private _renderMime: IRenderMimeRegistry;
-  constructor(renderMime: IRenderMimeRegistry) {
+  private _path: string;
+  constructor(renderMime: IRenderMimeRegistry, path: string) {
     super();
     this._renderMime = renderMime;
+    this._path = path;
     this.id = 'nbdiff';
     this.title.label = 'nbdiff';
     this.title.closable = true;
-    ReactDOM.render(<NBDiff renderMime={this._renderMime} />, this.node);
+    this.addClass('parent-diff-widget');
+    ReactDOM.render(
+      <NBDiff renderMime={this._renderMime} path={this._path} />,
+      this.node
+    );
   }
 
   onUpdateRequest(): void {
     ReactDOM.unmountComponentAtNode(this.node);
-    ReactDOM.render(<NBDiff renderMime={this._renderMime} />, this.node);
+    ReactDOM.render(
+      <NBDiff renderMime={this._renderMime} path={this._path} />,
+      this.node
+    );
   }
 }

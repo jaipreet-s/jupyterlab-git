@@ -54,3 +54,7 @@
 .CodeMirror-sizer[style] {
   margin-left: 47px !important;
 }
+
+.parent-diff-widget {
+  overflow: auto;
+}

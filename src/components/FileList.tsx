@@ -4,7 +4,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Menu } from '@phosphor/widgets';
 import * as React from 'react';
-// import { NBDiffWidget } from '../components/diff/NbDiffWidget';
+import { NBDiffWidget } from '../components/diff/NbDiffWidget';
 import { DiffWidget } from '../components/diff/DiffWidget';
 import {
   folderFileIconSelectedStyle,
@@ -333,7 +333,8 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
     renderMime: IRenderMimeRegistry,
     files?: string | Array<string>
   ) {
-    const nbDiffWidget = new DiffWidget({ renderMime });
+    const nbDiffWidget = new NBDiffWidget(renderMime, path);
+    // TODO: Check if already added
     app.shell.addToMainArea(nbDiffWidget);
     app.shell.activateById(nbDiffWidget.id);
   }

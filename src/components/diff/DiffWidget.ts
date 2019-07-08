@@ -40,7 +40,9 @@ export class DiffWidget extends Widget {
       httpGitRequest('/nbdime/api/gitdiff', 'POST', {
         file_name: 'Untitled1.ipynb',
         ref_prev: 'HEAD',
-        ref_curr: 'WORKING'
+        ref_curr: {
+          special: 'WORKING'
+        }
       }).then((response: Response) => {
         response.json().then((data: any) => {
           if (response.status !== 200) {
@@ -105,7 +107,7 @@ export class DiffWidget extends Widget {
   private UNCHANGED_DIFF_CLASS = 'jp-Diff-unchanged';
 
   /**
-   * Gets the chunk element of an added/removed cell, or the cell element for others
+   * Gets the cellChunk element of an added/removed cell, or the cell element for others
    * @param cellElement
    */
   private getChunkElement(cellElement: Element): Element {
