@@ -5,14 +5,14 @@ import { NBDiff } from './NbDiff';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 export class NBDiffWidget extends Widget {
-  private _renderMime: IRenderMimeRegistry;
-  private _path: string;
+  private readonly _renderMime: IRenderMimeRegistry;
+  private readonly _path: string;
+
   constructor(renderMime: IRenderMimeRegistry, path: string) {
     super();
     this._renderMime = renderMime;
     this._path = path;
-    this.id = 'nbdiff';
-    this.title.label = 'nbdiff';
+    this.title.label = `Diff (${path})`;
     this.title.closable = true;
     this.addClass('parent-diff-widget');
     ReactDOM.render(

@@ -333,10 +333,23 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
     renderMime: IRenderMimeRegistry,
     files?: string | Array<string>
   ) {
-    const nbDiffWidget = new NBDiffWidget(renderMime, path);
-    // TODO: Check if already added
-    app.shell.addToMainArea(nbDiffWidget);
-    app.shell.activateById(nbDiffWidget.id);
+    const id = `nbdiff-${path}`;
+
+    let mainAreaItems = app.shell.widgets('main');
+    let mainAreaItem = mainAreaItems.next();
+    while (mainAreaItem) {
+      if (mainAreaItem.id === id) {
+        app.shell.activateById(id);
+        break;
+      }
+      mainAreaItem = mainAreaItems.next();
+    }
+    if (!mainAreaItem) {
+      const nbDiffWidget = new NBDiffWidget(renderMime, path);
+      nbDiffWidget.id = id;
+      app.shell.addToMainArea(nbDiffWidget);
+      app.shell.activateById(nbDiffWidget.id);
+    }
   }
 
   /** Open a file in the git listing */
