@@ -4,6 +4,8 @@ import * as ReactDOM from 'react-dom';
 import { NBDiff } from './NbDiff';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
+import { diffPanelIconStyle } from '../../componentsStyle/DiffStyle';
+
 export class NBDiffWidget extends Widget {
   private readonly _renderMime: IRenderMimeRegistry;
   private readonly _path: string;
@@ -12,7 +14,9 @@ export class NBDiffWidget extends Widget {
     super();
     this._renderMime = renderMime;
     this._path = path;
-    this.title.label = `Diff (${path})`;
+    // TODO: Add Diff Icon;
+    this.title.label = path;
+    this.title.iconClass = diffPanelIconStyle;
     this.title.closable = true;
     this.addClass('parent-diff-widget');
     ReactDOM.render(
