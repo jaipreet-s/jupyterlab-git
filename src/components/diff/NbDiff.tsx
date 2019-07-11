@@ -8,6 +8,7 @@ import * as React from 'react';
 import { RefObject } from 'react';
 import { httpGitRequest } from '../../git';
 import { Panel } from '@phosphor/widgets';
+import { IDiffContext, ISpecialRef } from '../../diff';
 
 export interface ICellDiffProps {
   renderMime: IRenderMimeRegistry;
@@ -72,6 +73,7 @@ export interface INBDiffState {
 export interface INBDiffProps {
   renderMime: IRenderMimeRegistry;
   path: string;
+  diffContext: IDiffContext;
 }
 
 export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
@@ -81,7 +83,7 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
       nbdModel: undefined,
       nbdWidget: undefined
     };
-    this.performDiff();
+    this.performDiff(props.diffContext);
   }
 
   render() {
@@ -110,15 +112,26 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
     }
   }
 
-  private performDiff(): void {
+  private performDiff(diffContext: IDiffContext): void {
     try {
+      // Resolve what API parameter to call.
+      let currentRefValue;
+      if ('specialRef' in diffContext.currentRef) {
+        currentRefValue = {
+          special: diffContext.currentRef.specialRef
+        };
+      } else {
+        currentRefValue = {
+          git: diffContext.currentRef.gitRef
+        };
+      }
+
       console.log(`Performing diff for ${this.props.path}`);
+
       httpGitRequest('/nbdime/api/gitdiff', 'POST', {
         file_name: this.props.path,
-        ref_prev: 'HEAD',
-        ref_curr: {
-          special: 'WORKING'
-        }
+        ref_prev: diffContext.previousRef.gitRef,
+        ref_curr: currentRefValue
       }).then((response: Response) => {
         response.json().then((data: any) => {
           if (response.status !== 200) {

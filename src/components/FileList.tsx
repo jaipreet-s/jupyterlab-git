@@ -5,7 +5,6 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Menu } from '@phosphor/widgets';
 import * as React from 'react';
 import { NBDiffWidget } from '../components/diff/NbDiffWidget';
-import { DiffWidget } from '../components/diff/DiffWidget';
 import {
   folderFileIconSelectedStyle,
   folderFileIconStyle,
@@ -32,6 +31,7 @@ import {
 } from '../componentsStyle/FileListStyle';
 import { Git, IGitShowPrefixResult } from '../git';
 import { GitStage } from './GitStage';
+import { getRefValue, IDiffContext, ISpecialRef } from '../diff';
 
 export namespace CommandIDs {
   export const gitFileOpen = 'gf:Open';
@@ -40,7 +40,8 @@ export namespace CommandIDs {
   export const gitFileTrack = 'gf:Track';
   export const gitFileUntrack = 'gf:Untrack';
   export const gitFileDiscard = 'gf:Discard';
-  export const gitFileDiff = 'gf:Diff';
+  export const gitFileDiffWorking = 'gf:DiffWorking';
+  export const gitFileDiffIndex = 'gf:DiffIndex';
 }
 
 export interface IFileListState {
@@ -129,22 +130,38 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
       });
     }
 
-    if (!commands.hasCommand(CommandIDs.gitFileDiff)) {
-      commands.addCommand(CommandIDs.gitFileDiff, {
+    if (!commands.hasCommand(CommandIDs.gitFileDiffWorking)) {
+      commands.addCommand(CommandIDs.gitFileDiffWorking, {
         label: 'Diff',
         caption: 'Diff selected file',
         execute: () => {
-          try {
-            this.openDiffView(
-              this.state.contextMenuFile,
-              this.props.app,
-              'HEAD',
-              'WORKING',
-              this.props.renderMime
-            );
-          } catch (err) {
-            console.log('An error occured');
-          }
+          this.openDiffView(
+            this.state.contextMenuFile,
+            this.props.app,
+            {
+              currentRef: { specialRef: 'WORKING' },
+              previousRef: { gitRef: 'HEAD' }
+            },
+            this.props.renderMime
+          );
+        }
+      });
+    }
+
+    if (!commands.hasCommand(CommandIDs.gitFileDiffIndex)) {
+      commands.addCommand(CommandIDs.gitFileDiffIndex, {
+        label: 'Diff',
+        caption: 'Diff selected file',
+        execute: () => {
+          this.openDiffView(
+            this.state.contextMenuFile,
+            this.props.app,
+            {
+              currentRef: { specialRef: 'INDEX' },
+              previousRef: { gitRef: 'HEAD' }
+            },
+            this.props.renderMime
+          );
         }
       });
     }
@@ -217,6 +234,9 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
     this.state.contextMenuStaged.addItem({
       command: CommandIDs.gitFileUnstage
     });
+    this.state.contextMenuStaged.addItem({
+      command: CommandIDs.gitFileDiffIndex
+    });
 
     this.state.contextMenuUnstaged.addItem({ command: CommandIDs.gitFileOpen });
     this.state.contextMenuUnstaged.addItem({
@@ -226,7 +246,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
       command: CommandIDs.gitFileDiscard
     });
     this.state.contextMenuUnstaged.addItem({
-      command: CommandIDs.gitFileDiff
+      command: CommandIDs.gitFileDiffWorking
     });
 
     this.state.contextMenuUntracked.addItem({
@@ -328,12 +348,10 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
   async openDiffView(
     path: string,
     app: JupyterLab,
-    prevRef: string,
-    currRef: string,
-    renderMime: IRenderMimeRegistry,
-    files?: string | Array<string>
+    diffContext: IDiffContext,
+    renderMime: IRenderMimeRegistry
   ) {
-    const id = `nbdiff-${path}`;
+    const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
 
     let mainAreaItems = app.shell.widgets('main');
     let mainAreaItem = mainAreaItems.next();
@@ -345,7 +363,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
       mainAreaItem = mainAreaItems.next();
     }
     if (!mainAreaItem) {
-      const nbDiffWidget = new NBDiffWidget(renderMime, path);
+      const nbDiffWidget = new NBDiffWidget(renderMime, path, diffContext);
       nbDiffWidget.id = id;
       app.shell.addToMainArea(nbDiffWidget);
       app.shell.activateById(nbDiffWidget.id);
