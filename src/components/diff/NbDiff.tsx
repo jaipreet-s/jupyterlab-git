@@ -68,6 +68,7 @@ export class CellDiff extends React.Component<ICellDiffProps, ICellDiffState> {
 export interface INBDiffState {
   nbdModel: NotebookDiffModel | undefined;
   nbdWidget: NotebookDiffWidget | undefined;
+  errorMessage: string | undefined;
 }
 
 export interface INBDiffProps {
@@ -81,20 +82,25 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
     super(props);
     this.state = {
       nbdModel: undefined,
-      nbdWidget: undefined
+      nbdWidget: undefined,
+      errorMessage: undefined
     };
     this.performDiff(props.diffContext);
   }
 
   render() {
-    if (this.state.nbdModel === undefined) {
+    if (this.state.errorMessage !== undefined) {
       return (
-        <div
-          id="nbdiff-root"
-          className="nbdime-Diff nbdime-Widget nbdime-root jp-mod-hideunchanged"
-        />
+        <div>
+          <span className="jp-git-diff-error">
+            Failed to fetch diff with error:
+            <span className="jp-git-diff-error-message">
+              {this.state.errorMessage}
+            </span>
+          </span>
+        </div>
       );
-    } else {
+    } else if (this.state.nbdModel != undefined) {
       const listItems = this.state.nbdModel.chunkedCells.map(cellChunk => (
         <CellDiff
           cellChunk={cellChunk}
@@ -109,6 +115,8 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
           </div>
         </div>
       );
+    } else {
+      return null;
     }
   }
 
@@ -129,21 +137,34 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
       console.log(`Performing diff for ${this.props.path}`);
 
       httpGitRequest('/nbdime/api/gitdiff', 'POST', {
-        file_name: this.props.path,
-        ref_prev: diffContext.previousRef.gitRef,
+        file_path: this.props.path,
+        ref_prev: { git: diffContext.previousRef.gitRef },
         ref_curr: currentRefValue
       }).then((response: Response) => {
-        response.json().then((data: any) => {
-          if (response.status !== 200) {
-            throw new ServerConnection.ResponseError(response, data.message);
-          }
-          let base = data['base'] as nbformat.INotebookContent;
-          let diff = (data['diff'] as any) as IDiffEntry[];
-          let nbdModel = new NotebookDiffModel(base, diff);
-          this.setState({
-            nbdModel: nbdModel
+        response
+          .json()
+          .then((data: any) => {
+            if (response.status !== 200) {
+              // Handle error
+              this.setState({
+                errorMessage: data.message
+              });
+            } else {
+              // Handle response
+              let base = data['base'] as nbformat.INotebookContent;
+              let diff = (data['diff'] as any) as IDiffEntry[];
+              let nbdModel = new NotebookDiffModel(base, diff);
+              this.setState({
+                nbdModel: nbdModel
+              });
+            }
+          })
+          .catch(reason => {
+            // Handle error
+            this.setState({
+              errorMessage: reason.message || ''
+            });
           });
-        });
       });
     } catch (err) {
       throw ServerConnection.NetworkError;
