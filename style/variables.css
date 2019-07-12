@@ -32,6 +32,7 @@
   --jp-icon-move-file-up: url('./images/move-file-up.svg');
   --jp-icon-plus: url('./images/plus.svg');
   --jp-icon-rewind: url('./images/rewind.svg');
+  --jp-icon-diff: url('./images/diff-hover.svg');
 }
 
 [data-jp-theme-light='false'] {
@@ -45,4 +46,18 @@
   --jp-icon-move-file-up: url('./images/move-file-up-hover.svg');
   --jp-icon-plus: url('./images/plus-white.svg');
   --jp-icon-rewind: url('./images/rewind-white.svg');
+  --jp-icon-diff: url('./images/diff-hover-dk.svg');
 }
+
+.jp-Notebook-diff .CodeMirror-gutter.CodeMirror-linenumbers[style] {
+  width: 29px !important;
+}
+
+.jp-Notebook-diff .CodeMirror-sizer[style] {
+  margin-left: 47px !important;
+}
+
+.parent-diff-widget {
+  overflow: auto;
+}
+>>>>>>> All NBDiff changes
