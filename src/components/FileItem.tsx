@@ -30,7 +30,7 @@ import * as React from 'react';
 
 import { showDialog, Dialog } from '@jupyterlab/apputils';
 import { button } from '../componentsStyle/SinglePastCommitInfoStyle';
-import { openDiffView } from '../diff';
+import { ISpecialRef, openDiffView } from '../diff';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { isDiffSupported } from './diff/Diff';
 
@@ -302,45 +302,41 @@ export class FileItem extends React.Component<IFileItemProps, {}> {
                   this.discardSelectedFileChanges();
                 }}
               />
-              {isDiffSupported(this.props.file.to) && (
-                <button
-                  className={`jp-Git-button ${this.getDiffFileIconClass()}`}
-                  title={'Diff this file'}
-                  onClick={() => {
-                    openDiffView(
-                      this.props.file.to,
-                      this.props.app,
-                      {
-                        previousRef: { gitRef: 'HEAD' },
-                        currentRef: { specialRef: 'WORKING' }
-                      },
-                      this.props.renderMime
-                    );
-                  }}
-                />
-              )}
+              {isDiffSupported(this.props.file.to) &&
+                this.diffButton({ specialRef: 'WORKING' })}
             </React.Fragment>
           )}
           {this.props.stage === 'Staged' &&
-            isDiffSupported(this.props.file.to) && (
-              <button
-                className={`jp-Git-button ${this.getDiffFileIconClass()}`}
-                title={'Diff this file'}
-                onClick={() => {
-                  openDiffView(
-                    this.props.file.to,
-                    this.props.app,
-                    {
-                      previousRef: { gitRef: 'HEAD' },
-                      currentRef: { specialRef: 'INDEX' }
-                    },
-                    this.props.renderMime
-                  );
-                }}
-              />
-            )}
+            isDiffSupported(this.props.file.to) &&
+            this.diffButton({ specialRef: 'INDEX' })}
         </span>
       </div>
+    );
+  }
+
+  /**
+   * Creates a button element which is used to request diff from within the
+   * Git panel.
+   *
+   * @param currentRef the ref to diff against the git 'HEAD' ref
+   */
+  private diffButton(currentRef: ISpecialRef): JSX.Element {
+    return (
+      <button
+        className={`jp-Git-button ${this.getDiffFileIconClass()}`}
+        title={'Diff this file'}
+        onClick={() => {
+          openDiffView(
+            this.props.file.to,
+            this.props.app,
+            {
+              previousRef: { gitRef: 'HEAD' },
+              currentRef: { specialRef: currentRef.specialRef }
+            },
+            this.props.renderMime
+          );
+        }}
+      />
     );
   }
 }
