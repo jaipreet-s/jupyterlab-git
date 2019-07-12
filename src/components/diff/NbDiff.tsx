@@ -9,6 +9,7 @@ import { RefObject } from 'react';
 import { httpGitRequest } from '../../git';
 import { Panel } from '@phosphor/widgets';
 import { IDiffContext, ISpecialRef } from '../../diff';
+import { NBDiffHeader } from './NBDiffHeader';
 
 export interface ICellDiffProps {
   renderMime: IRenderMimeRegistry;
@@ -111,7 +112,13 @@ export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
       return (
         <div className="nbdime-Widget">
           <div className="nbdime-root jp-mod-hideunchanged">
-            <div className="jp-Notebook-diff">{listItems}</div>
+            <div className="jp-Notebook-diff">
+              <NBDiffHeader
+                path={this.props.path}
+                diffContext={this.props.diffContext}
+              />
+              {listItems}
+            </div>
           </div>
         </div>
       );

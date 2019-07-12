@@ -76,3 +76,32 @@
   color: var(--jp-error-color1);
   margin-left: 5px;
 }
+
+.jp-git-diff-header-path {
+  background: #FAFAFA;
+  border: 1px solid #EAEDED;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  font-size: var(--jp-ui-font-size0);
+  padding: 5px;
+}
+
+.jp-git-diff-header {
+  font-family: var(--jp-ui-font-color2);
+  font-size: var(--jp-ui-font-size0);
+  margin-bottom: 5px;
+}
+
+.jp-git-diff-header > .jp-Diff-addedchunk {
+  background: #E1F4DD;
+  border: 1px solid #AAD49D;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.jp-git-diff-header > .jp-Diff-removedchunk {
+  background: #F4DDDD;
+  border: 1px solid #D99D9D;
+  box-sizing: border-box;
+  padding: 5px
+}
