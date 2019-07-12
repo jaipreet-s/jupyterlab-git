@@ -3,7 +3,8 @@ import { JupyterLab } from '@jupyterlab/application';
 import {
   changeStageButtonStyle,
   changeStageButtonLeftStyle,
-  discardFileButtonStyle
+  discardFileButtonStyle,
+  diffFileButtonStyle
 } from '../componentsStyle/GitStageStyle';
 
 import {
@@ -17,7 +18,6 @@ import {
   selectedFileChangedLabelStyle,
   fileChangedLabelBrandStyle,
   fileChangedLabelInfoStyle,
-  discardWarningStyle,
   fileButtonStyle,
   fileGitButtonStyle,
   discardFileButtonSelectedStyle,
@@ -29,6 +29,9 @@ import { classes } from 'typestyle';
 import * as React from 'react';
 
 import { showDialog, Dialog } from '@jupyterlab/apputils';
+import { button } from '../componentsStyle/SinglePastCommitInfoStyle';
+import { openDiffView } from '../diff';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 export interface IFileItemProps {
   topRepoPath: string;
@@ -55,6 +58,7 @@ export interface IFileItemProps {
   disableFile: boolean;
   toggleDisableFiles: Function;
   sideBarExpanded: boolean;
+  renderMime: IRenderMimeRegistry;
 }
 
 export class FileItem extends React.Component<IFileItemProps, {}> {
@@ -181,6 +185,15 @@ export class FileItem extends React.Component<IFileItemProps, {}> {
     }
   }
 
+  getDiffFileIconClass() {
+    return classes(
+      fileButtonStyle,
+      changeStageButtonStyle,
+      fileGitButtonStyle,
+      diffFileButtonStyle
+    );
+  }
+
   getDiscardFileIconClass() {
     if (this.showDiscardWarning()) {
       return classes(
@@ -205,11 +218,6 @@ export class FileItem extends React.Component<IFileItemProps, {}> {
           );
     }
   }
-
-  getDiscardWarningClass() {
-    return discardWarningStyle;
-  }
-
   /**
    * Callback method discarding unstanged changes for selected file.
    * It shows modal asking for confirmation and when confirmed make
@@ -283,11 +291,45 @@ export class FileItem extends React.Component<IFileItemProps, {}> {
             {this.getFileChangedLabel(this.props.file.y)}
           </span>
           {this.props.stage === 'Changed' && (
+            <React.Fragment>
+              <button
+                className={`jp-Git-button ${this.getDiscardFileIconClass()}`}
+                title={'Discard this change'}
+                onClick={() => {
+                  this.discardSelectedFileChanges();
+                }}
+              />
+              <button
+                className={`jp-Git-button ${this.getDiffFileIconClass()}`}
+                title={'Diff this file'}
+                onClick={() => {
+                  openDiffView(
+                    this.props.file.to,
+                    this.props.app,
+                    {
+                      previousRef: { gitRef: 'HEAD' },
+                      currentRef: { specialRef: 'WORKING' }
+                    },
+                    this.props.renderMime
+                  );
+                }}
+              />
+            </React.Fragment>
+          )}
+          {this.props.stage === 'Staged' && (
             <button
-              className={`jp-Git-button ${this.getDiscardFileIconClass()}`}
-              title={'Discard this change'}
+              className={`jp-Git-button ${this.getDiffFileIconClass()}`}
+              title={'Diff this file'}
               onClick={() => {
-                this.discardSelectedFileChanges();
+                openDiffView(
+                  this.props.file.to,
+                  this.props.app,
+                  {
+                    previousRef: { gitRef: 'HEAD' },
+                    currentRef: { specialRef: 'INDEX' }
+                  },
+                  this.props.renderMime
+                );
               }}
             />
           )}

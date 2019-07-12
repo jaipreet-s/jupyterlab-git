@@ -83,12 +83,6 @@ export const fileChangedLabelInfoStyle = style({
   color: 'var(--jp-info-color0)'
 });
 
-export const discardWarningStyle = style({
-  color: 'var(--jp-ui-font-color1)',
-  marginLeft: '20px',
-  height: '50px'
-});
-
 export const fileGitButtonStyle = style({
   visibility: 'hidden',
   display: 'inline'
@@ -106,17 +100,6 @@ export const discardFileButtonSelectedStyle = style({
   backgroundImage: 'var(--jp-icon-discard-file-selected)',
   marginLeft: '6px',
   backgroundSize: '120%'
-});
-
-export const cancelDiscardButtonStyle = style({
-  backgroundColor: 'var(--jp-border-color0)',
-  border: 'none'
-});
-
-export const acceptDiscardButtonStyle = style({
-  backgroundColor: 'var(--jp-error-color0)',
-  border: 'none',
-  marginLeft: '5px'
 });
 
 export const sideBarExpandedFileLabelStyle = style({

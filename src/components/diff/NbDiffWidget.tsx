@@ -21,7 +21,6 @@ export class NBDiffWidget extends Widget {
     this._renderMime = renderMime;
     this._path = path;
     this._gitContext = gitContext;
-    // TODO: Add Diff Icon;
     this.title.label = path;
     this.title.iconClass = diffPanelIconStyle;
     this.title.closable = true;

@@ -565,6 +565,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
               disableOthers={null}
               isDisabled={this.state.disableStaged}
               sideBarExpanded={this.props.sideBarExpanded}
+              renderMime={this.props.renderMime}
             />
             <GitStage
               heading={'Changed'}
@@ -598,6 +599,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
               disableOthers={this.disableStagesForDiscardAll}
               isDisabled={this.state.disableUnstaged}
               sideBarExpanded={this.props.sideBarExpanded}
+              renderMime={this.props.renderMime}
             />
             <GitStage
               heading={'Untracked'}
@@ -631,6 +633,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
               disableOthers={null}
               isDisabled={this.state.disableUntracked}
               sideBarExpanded={this.props.sideBarExpanded}
+              renderMime={this.props.renderMime}
             />
           </div>
         )}
