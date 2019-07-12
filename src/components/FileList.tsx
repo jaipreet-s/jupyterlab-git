@@ -4,7 +4,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Menu } from '@phosphor/widgets';
 import * as React from 'react';
-import { NBDiffWidget } from '../components/diff/NbDiffWidget';
+import { DiffWidget } from './diff/DiffWidget';
 import {
   folderFileIconSelectedStyle,
   folderFileIconStyle,
@@ -31,14 +31,13 @@ import {
 } from '../componentsStyle/FileListStyle';
 import { Git, IGitShowPrefixResult } from '../git';
 import { GitStage } from './GitStage';
-import { getRefValue, IDiffContext, ISpecialRef } from '../diff';
+import { openDiffView } from '../diff';
 
 export namespace CommandIDs {
   export const gitFileOpen = 'gf:Open';
   export const gitFileUnstage = 'gf:Unstage';
   export const gitFileStage = 'gf:Stage';
   export const gitFileTrack = 'gf:Track';
-  export const gitFileUntrack = 'gf:Untrack';
   export const gitFileDiscard = 'gf:Discard';
   export const gitFileDiffWorking = 'gf:DiffWorking';
   export const gitFileDiffIndex = 'gf:DiffIndex';
@@ -135,7 +134,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
         label: 'Diff',
         caption: 'Diff selected file',
         execute: () => {
-          this.openDiffView(
+          openDiffView(
             this.state.contextMenuFile,
             this.props.app,
             {
@@ -153,7 +152,7 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
         label: 'Diff',
         caption: 'Diff selected file',
         execute: () => {
-          this.openDiffView(
+          openDiffView(
             this.state.contextMenuFile,
             this.props.app,
             {
@@ -344,32 +343,6 @@ export class FileList extends React.Component<IFileListProps, IFileListState> {
   updateSelectedStage = (stage: string): void => {
     this.setState({ selectedStage: stage });
   };
-
-  async openDiffView(
-    path: string,
-    app: JupyterLab,
-    diffContext: IDiffContext,
-    renderMime: IRenderMimeRegistry
-  ) {
-    const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
-
-    let mainAreaItems = app.shell.widgets('main');
-    let mainAreaItem = mainAreaItems.next();
-    while (mainAreaItem) {
-      if (mainAreaItem.id === id) {
-        app.shell.activateById(id);
-        break;
-      }
-      mainAreaItem = mainAreaItems.next();
-    }
-    if (!mainAreaItem) {
-      const nbDiffWidget = new NBDiffWidget(renderMime, path, diffContext);
-      nbDiffWidget.id = id;
-      app.shell.addToMainArea(nbDiffWidget);
-      app.shell.activateById(nbDiffWidget.id);
-    }
-  }
-
   /** Open a file in the git listing */
   async openListedFile(
     typeX: string,

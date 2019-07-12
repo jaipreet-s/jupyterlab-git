@@ -1,6 +1,9 @@
 import { JupyterLab } from '@jupyterlab/application';
-import { NBDiffWidget } from './components/diff/NbDiffWidget';
+import { DiffWidget } from './components/diff/DiffWidget';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { isDiffSupported } from './components/diff/Diff';
+import { showDialog } from '@jupyterlab/apputils';
+import { PathExt } from '@jupyterlab/coreutils';
 
 /**
  * Model which indicates the context in which a Git diff is being performed.
@@ -64,21 +67,29 @@ export function openDiffView(
   diffContext: IDiffContext,
   renderMime: IRenderMimeRegistry
 ) {
-  const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
-
-  let mainAreaItems = app.shell.widgets('main');
-  let mainAreaItem = mainAreaItems.next();
-  while (mainAreaItem) {
-    if (mainAreaItem.id === id) {
-      app.shell.activateById(id);
-      break;
+  if (isDiffSupported(path)) {
+    const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
+    let mainAreaItems = app.shell.widgets('main');
+    let mainAreaItem = mainAreaItems.next();
+    while (mainAreaItem) {
+      if (mainAreaItem.id === id) {
+        app.shell.activateById(id);
+        break;
+      }
+      mainAreaItem = mainAreaItems.next();
     }
-    mainAreaItem = mainAreaItems.next();
-  }
-  if (!mainAreaItem) {
-    const nbDiffWidget = new NBDiffWidget(renderMime, path, diffContext);
-    nbDiffWidget.id = id;
-    app.shell.addToMainArea(nbDiffWidget);
-    app.shell.activateById(nbDiffWidget.id);
+    if (!mainAreaItem) {
+      const nbDiffWidget = new DiffWidget(renderMime, path, diffContext);
+      nbDiffWidget.id = id;
+      app.shell.addToMainArea(nbDiffWidget);
+      app.shell.activateById(nbDiffWidget.id);
+    }
+  } else {
+    showDialog({
+      title: 'Diff Not Supported',
+      body: `Diff is not supported for ${PathExt.extname(
+        path
+      ).toLocaleLowerCase()} files.`
+    });
   }
 }

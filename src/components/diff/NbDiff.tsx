@@ -8,8 +8,9 @@ import * as React from 'react';
 import { RefObject } from 'react';
 import { httpGitRequest } from '../../git';
 import { Panel } from '@phosphor/widgets';
-import { IDiffContext, ISpecialRef } from '../../diff';
+import { IDiffContext } from '../../diff';
 import { NBDiffHeader } from './NBDiffHeader';
+import { IDiffProps } from './Diff';
 
 export interface ICellDiffProps {
   renderMime: IRenderMimeRegistry;
@@ -17,9 +18,7 @@ export interface ICellDiffProps {
   mimeType: string;
 }
 
-export interface ICellDiffState {}
-
-export class CellDiff extends React.Component<ICellDiffProps, ICellDiffState> {
+export class CellDiff extends React.Component<ICellDiffProps, {}> {
   private widgetRef: RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
@@ -72,14 +71,8 @@ export interface INBDiffState {
   errorMessage: string | undefined;
 }
 
-export interface INBDiffProps {
-  renderMime: IRenderMimeRegistry;
-  path: string;
-  diffContext: IDiffContext;
-}
-
-export class NBDiff extends React.Component<INBDiffProps, INBDiffState> {
-  constructor(props: INBDiffProps) {
+export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
+  constructor(props: IDiffProps) {
     super(props);
     this.state = {
       nbdModel: undefined,
