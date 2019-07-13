@@ -24,6 +24,7 @@ import { IDiffCallback } from './git';
 export { IDiffCallback } from './git';
 
 import '../style/variables.css';
+import '../style/diff.css';
 import { GitClone } from './gitClone';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 

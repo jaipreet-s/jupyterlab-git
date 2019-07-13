@@ -66,9 +66,8 @@ export class CellDiff extends React.Component<ICellDiffProps, {}> {
 }
 
 export interface INBDiffState {
-  nbdModel: NotebookDiffModel | undefined;
-  nbdWidget: NotebookDiffWidget | undefined;
-  errorMessage: string | undefined;
+  nbdModel: NotebookDiffModel;
+  errorMessage: string;
 }
 
 export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
@@ -76,7 +75,6 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
     super(props);
     this.state = {
       nbdModel: undefined,
-      nbdWidget: undefined,
       errorMessage: undefined
     };
     this.performDiff(props.diffContext);
@@ -94,8 +92,8 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
           </span>
         </div>
       );
-    } else if (this.state.nbdModel != undefined) {
-      const listItems = this.state.nbdModel.chunkedCells.map(cellChunk => (
+    } else if (this.state.nbdModel !== undefined) {
+      const cellComponents = this.state.nbdModel.chunkedCells.map(cellChunk => (
         <CellDiff
           cellChunk={cellChunk}
           renderMime={this.props.renderMime}
@@ -103,14 +101,11 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
         />
       ));
       return (
-        <div className="nbdime-Widget">
-          <div className="nbdime-root jp-mod-hideunchanged">
-            <div className="jp-Notebook-diff">
-              <NBDiffHeader
-                path={this.props.path}
-                diffContext={this.props.diffContext}
-              />
-              {listItems}
+        <div className="jp-git-diff-Widget">
+          <div className="jp-git-diff-root jp-mod-hideunchanged">
+            <div className="jp-git-Notebook-diff">
+              <NBDiffHeader {...this.props} />
+              {cellComponents}
             </div>
           </div>
         </div>
@@ -120,6 +115,11 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
     }
   }
 
+  /**
+   * Based on the Diff Context , calls the server API with the revant paremeters
+   * to
+   * @param diffContext the context in which to perform the diff
+   */
   private performDiff(diffContext: IDiffContext): void {
     try {
       // Resolve what API parameter to call.

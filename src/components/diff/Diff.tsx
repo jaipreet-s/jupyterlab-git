@@ -4,6 +4,25 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { NBDiff } from './NbDiff';
 import { PathExt } from '@jupyterlab/coreutils';
 
+/**
+ * A registry which maintains mappings of file extension to diff provider components.
+ */
+export const DIFF_PROVIDER_REGISTRY = {
+  '.ipynb': NBDiff
+};
+
+/**
+ * Determines if a given file is supported for diffs.
+ *
+ * This will be removed when "Plaintext" diffs are supported since that will be used
+ * for cases where there is not a dedicated diff provider.
+ *
+ * @param path the file path
+ */
+export function isDiffSupported(path: string): boolean {
+  return PathExt.extname(path).toLocaleLowerCase() in DIFF_PROVIDER_REGISTRY;
+}
+
 export interface IDiffProps {
   renderMime: IRenderMimeRegistry;
   path: string;
@@ -32,23 +51,4 @@ export class Diff extends React.Component<IDiffProps, {}> {
       return null;
     }
   }
-}
-
-/**
- * A registry which maintains mappings of file extension to diff provider components.
- */
-export const DIFF_PROVIDER_REGISTRY = {
-  '.ipynb': NBDiff
-};
-
-/**
- * Determines if a given file is supported for diffs.
- *
- * This will be removed when "Plaintext" diffs are supported since that will be used
- * for cases where there is not a dedicated diff provider.
- *
- * @param path the file path
- */
-export function isDiffSupported(path: string): boolean {
-  return PathExt.extname(path).toLocaleLowerCase() in DIFF_PROVIDER_REGISTRY;
 }

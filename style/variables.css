@@ -49,11 +49,11 @@
   --jp-icon-diff: url('./images/diff-hover-dk.svg');
 }
 
-.jp-Notebook-diff .CodeMirror-gutter.CodeMirror-linenumbers[style] {
+.jp-git-Notebook-diff .CodeMirror-gutter.CodeMirror-linenumbers[style] {
   width: 29px !important;
 }
 
-.jp-Notebook-diff .CodeMirror-sizer[style] {
+.jp-git-Notebook-diff .CodeMirror-sizer[style] {
   margin-left: 47px !important;
 }
 
@@ -89,7 +89,7 @@
 .jp-git-diff-header {
   font-family: var(--jp-ui-font-color2);
   font-size: var(--jp-ui-font-size0);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .jp-git-diff-header > .jp-Diff-addedchunk {
@@ -104,4 +104,54 @@
   border: 1px solid #D99D9D;
   box-sizing: border-box;
   padding: 5px
+}
+
+.jp-git-Notebook-diff .CodeMirror pre {
+  font-size: var(--jp-ui-font-size0);
+}
+
+.jp-git-Notebook-diff .jp-CollapsiblePanel {
+  font-size: var(--jp-ui-font-size0);
+}
+
+.jp-git-Notebook-diff pre {
+  font-size: var(--jp-ui-font-size0);
+}
+
+.jp-git-Notebook-diff .jp-Diff-outputMenu {
+  font-size: var(--jp-ui-font-size0);
+}
+
+.jp-git-Notebook-diff button.jp-CollapsiblePanel-header-icon {
+  background-size: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 15px;
+  width: 15px;
+  font-size: var(--jp-ui-font-size1);
+  line-height: var(--jp-private-toolbar-height);
+  margin-top: .1em;
+  font-weight: 500;
+  color: var(--jp-ui-font-color1);
+  background-color: transparent;
+  border: 1px solid var(--jp-nbdime-output-color2);
+  text-decoration: none;
+  transition: background-color 0.1s ease;
+  margin-left: 5px;
+}
+
+.jp-git-diff-Widget {
+  display: flex;
+  flex-direction: column;
+}
+
+.jp-git-diff-root {
+  padding: var(--jp-notebook-padding);
+  min-width: 50px;
+  min-height: 50px;
+  outline: none;
+  overflow: auto;
+  background: var(--jp-layout-color0);
+  color: var(--jp-ui-font-color0);
+  flex: 1 1 auto;
 }
