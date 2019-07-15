@@ -4,7 +4,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Menu } from '@phosphor/widgets';
 import * as React from 'react';
-import { DiffWidget, openDiffView } from './diff/DiffWidget';
+import { openDiffView } from './diff/DiffWidget';
 import {
   folderFileIconSelectedStyle,
   folderFileIconStyle,
