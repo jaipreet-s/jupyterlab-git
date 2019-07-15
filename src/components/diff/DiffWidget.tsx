@@ -3,12 +3,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
-import { diffPanelIconStyle } from '../../componentsStyle/DiffStyle';
 import { getRefValue, IDiffContext } from './model';
 import { Diff, isDiffSupported } from './Diff';
 import { JupyterLab } from '@jupyterlab/application';
 import { showDialog } from '@jupyterlab/apputils';
 import { PathExt } from '@jupyterlab/coreutils';
+import { style } from 'typestyle';
 
 export class DiffWidget extends Widget {
   private readonly _renderMime: IRenderMimeRegistry;
@@ -26,7 +26,9 @@ export class DiffWidget extends Widget {
     this._gitContext = gitContext;
 
     this.title.label = path;
-    this.title.iconClass = diffPanelIconStyle;
+    this.title.iconClass = style({
+      backgroundImage: 'var(--jp-icon-diff)'
+    });
     this.title.closable = true;
     this.addClass('jp-git-diff-parent-diff-widget');
 
