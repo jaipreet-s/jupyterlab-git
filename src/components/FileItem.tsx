@@ -30,9 +30,10 @@ import * as React from 'react';
 
 import { showDialog, Dialog } from '@jupyterlab/apputils';
 import { button } from '../componentsStyle/SinglePastCommitInfoStyle';
-import { ISpecialRef, openDiffView } from '../diff';
+import { ISpecialRef } from './diff/model';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { isDiffSupported } from './diff/Diff';
+import { openDiffView } from './diff/DiffWidget';
 
 export interface IFileItemProps {
   topRepoPath: string;

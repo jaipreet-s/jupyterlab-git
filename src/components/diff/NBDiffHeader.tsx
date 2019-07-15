@@ -1,11 +1,16 @@
 import * as React from 'react';
-import { IDiffContext, IGitRef, ISpecialRef } from '../../diff';
+import { IDiffContext, IGitRef, ISpecialRef } from './model';
 
 export interface INBDiffHeaderProps {
   path: string;
   diffContext: IDiffContext;
 }
 
+/**
+ * A React component to render the header which shows metadata around the diff
+ * being rendered. Shows the path to the file and the previous and current ref
+ * being used for the diff.
+ */
 export class NBDiffHeader extends React.Component<INBDiffHeaderProps, {}> {
   constructor(props: INBDiffHeaderProps) {
     super(props);
@@ -32,7 +37,7 @@ export class NBDiffHeader extends React.Component<INBDiffHeaderProps, {}> {
   /**
    * Utility method to get a user-friendly display text for a given ref.
    */
-  private getRefDisplayValue(ref: ISpecialRef | IGitRef): string {
+  private getRefDisplayValue = (ref: ISpecialRef | IGitRef): string => {
     const SPECIAL_REFS = {
       WORKING: {
         displayName: 'Changed'
@@ -47,5 +52,5 @@ export class NBDiffHeader extends React.Component<INBDiffHeaderProps, {}> {
     } else {
       return ref.gitRef;
     }
-  }
+  };
 }

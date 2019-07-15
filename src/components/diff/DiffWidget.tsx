@@ -4,8 +4,11 @@ import * as ReactDOM from 'react-dom';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 import { diffPanelIconStyle } from '../../componentsStyle/DiffStyle';
-import { IDiffContext } from '../../diff';
-import { Diff } from './Diff';
+import { getRefValue, IDiffContext } from './model';
+import { Diff, isDiffSupported } from './Diff';
+import { JupyterLab } from '@jupyterlab/application';
+import { showDialog } from '@jupyterlab/apputils';
+import { PathExt } from '@jupyterlab/coreutils';
 
 export class DiffWidget extends Widget {
   private readonly _renderMime: IRenderMimeRegistry;
@@ -25,7 +28,7 @@ export class DiffWidget extends Widget {
     this.title.label = path;
     this.title.iconClass = diffPanelIconStyle;
     this.title.closable = true;
-    this.addClass('parent-diff-widget');
+    this.addClass('jp-git-diff-parent-diff-widget');
 
     ReactDOM.render(
       <Diff
@@ -47,5 +50,47 @@ export class DiffWidget extends Widget {
       />,
       this.node
     );
+  }
+}
+
+/**
+ * Method to open a main menu panel to show the diff of a given Notebook file.
+ * If one already exists, just activates the existing one.
+ *
+ * @param path the path relative to the Jupyter server root.
+ * @param app The JupyterLab application instance
+ * @param diffContext the context in which the diff is being requested
+ * @param renderMime the renderMime registry instance from the
+ */
+export function openDiffView(
+  path: string,
+  app: JupyterLab,
+  diffContext: IDiffContext,
+  renderMime: IRenderMimeRegistry
+) {
+  if (isDiffSupported(path)) {
+    const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
+    let mainAreaItems = app.shell.widgets('main');
+    let mainAreaItem = mainAreaItems.next();
+    while (mainAreaItem) {
+      if (mainAreaItem.id === id) {
+        app.shell.activateById(id);
+        break;
+      }
+      mainAreaItem = mainAreaItems.next();
+    }
+    if (!mainAreaItem) {
+      const nbDiffWidget = new DiffWidget(renderMime, path, diffContext);
+      nbDiffWidget.id = id;
+      app.shell.addToMainArea(nbDiffWidget);
+      app.shell.activateById(nbDiffWidget.id);
+    }
+  } else {
+    showDialog({
+      title: 'Diff Not Supported',
+      body: `Diff is not supported for ${PathExt.extname(
+        path
+      ).toLocaleLowerCase()} files.`
+    });
   }
 }

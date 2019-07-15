@@ -4,7 +4,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Menu } from '@phosphor/widgets';
 import * as React from 'react';
-import { DiffWidget } from './diff/DiffWidget';
+import { DiffWidget, openDiffView } from './diff/DiffWidget';
 import {
   folderFileIconSelectedStyle,
   folderFileIconStyle,
@@ -31,7 +31,6 @@ import {
 } from '../componentsStyle/FileListStyle';
 import { Git, IGitShowPrefixResult } from '../git';
 import { GitStage } from './GitStage';
-import { openDiffView } from '../diff';
 
 export namespace CommandIDs {
   export const gitFileOpen = 'gf:Open';

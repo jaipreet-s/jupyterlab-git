@@ -7,8 +7,7 @@ import { CellDiffWidget } from 'nbdime/lib/diff/widget';
 import * as React from 'react';
 import { RefObject } from 'react';
 import { httpGitRequest } from '../../git';
-import { Panel } from '@phosphor/widgets';
-import { IDiffContext } from '../../diff';
+import { IDiffContext } from './model';
 import { NBDiffHeader } from './NBDiffHeader';
 import { IDiffProps } from './Diff';
 
@@ -18,8 +17,23 @@ export interface ICellDiffProps {
   mimeType: string;
 }
 
+/**
+ * A React component which renders the diff is a single Notebook cell.
+ *
+ * This uses the NBDime PhosporJS CellDiffWidget internally. To get around the
+ * PhosporJS <=> ReactJS barrier, it uses React Refs(https://reactjs.org/docs/refs-and-the-dom.html)
+ *
+ * During component render, a Ref is created for the ReactDOM and after the component
+ * is mounted, the PhosporJS widget is created and attached to the Ref.
+ */
 export class CellDiff extends React.Component<ICellDiffProps, {}> {
-  private widgetRef: RefObject<HTMLDivElement> = React.createRef<
+  private unmodifiedCellRef: RefObject<HTMLDivElement> = React.createRef<
+    HTMLDivElement
+  >();
+  private addedRef: RefObject<HTMLDivElement> = React.createRef<
+    HTMLDivElement
+  >();
+  private removedRef: RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
 
@@ -31,37 +45,41 @@ export class CellDiff extends React.Component<ICellDiffProps, {}> {
   componentDidMount(): void {
     const chunk = this.props.cellChunk;
 
-    let widget;
     if (chunk.length === 1 && !(chunk[0].added || chunk[0].deleted)) {
-      widget = new CellDiffWidget(
+      const widget = new CellDiffWidget(
         chunk[0],
         this.props.renderMime,
         this.props.mimeType
       );
+      this.unmodifiedCellRef.current.appendChild(widget.node);
     } else {
-      // This is the case for Added/removed/modified.
-      widget = new Panel();
-      widget.addClass('jp-Diff-addremchunk');
-      let addedPanel = new Panel();
-      addedPanel.addClass('jp-Diff-addedchunk');
-      let removedPanel = new Panel();
-      removedPanel.addClass('jp-Diff-removedchunk');
       for (let j = 0; j < chunk.length; j++) {
-        let cell = chunk[j];
-        let target = cell.deleted ? removedPanel : addedPanel;
-        target.addWidget(
-          new CellDiffWidget(cell, this.props.renderMime, this.props.mimeType)
+        const cell = chunk[j];
+        const ref = cell.deleted ? this.removedRef : this.addedRef;
+        const widget = new CellDiffWidget(
+          cell,
+          this.props.renderMime,
+          this.props.mimeType
         );
+        ref.current.appendChild(widget.node);
       }
-      widget.addWidget(addedPanel);
-      widget.addWidget(removedPanel);
     }
-
-    this.widgetRef.current.appendChild(widget.node);
   }
 
   render() {
-    return <div ref={this.widgetRef} />;
+    const chunk = this.props.cellChunk;
+    return (
+      <React.Fragment>
+        {chunk.length === 1 && !(chunk[0].added || chunk[0].deleted) ? (
+          <div ref={this.unmodifiedCellRef} />
+        ) : (
+          <div className={'jp-Diff-addremchunk'}>
+            <div className={'jp-Diff-addedchunk'} ref={this.addedRef} />
+            <div className={'jp-Diff-removedchunk'} ref={this.removedRef} />
+          </div>
+        )}
+      </React.Fragment>
+    );
   }
 }
 
@@ -70,6 +88,9 @@ export interface INBDiffState {
   errorMessage: string;
 }
 
+/**
+ *
+ */
 export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
   constructor(props: IDiffProps) {
     super(props);
@@ -93,13 +114,16 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
         </div>
       );
     } else if (this.state.nbdModel !== undefined) {
-      const cellComponents = this.state.nbdModel.chunkedCells.map(cellChunk => (
-        <CellDiff
-          cellChunk={cellChunk}
-          renderMime={this.props.renderMime}
-          mimeType={this.state.nbdModel.mimetype}
-        />
-      ));
+      const cellComponents = this.state.nbdModel.chunkedCells.map(
+        (cellChunk, index) => (
+          <CellDiff
+            key={index}
+            cellChunk={cellChunk}
+            renderMime={this.props.renderMime}
+            mimeType={this.state.nbdModel.mimetype}
+          />
+        )
+      );
       return (
         <div className="jp-git-diff-Widget">
           <div className="jp-git-diff-root jp-mod-hideunchanged">
@@ -133,8 +157,6 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
           git: diffContext.currentRef.gitRef
         };
       }
-
-      console.log(`Performing diff for ${this.props.path}`);
 
       httpGitRequest('/nbdime/api/gitdiff', 'POST', {
         file_path: this.props.path,

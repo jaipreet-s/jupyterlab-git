@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IDiffContext } from '../../diff';
+import { IDiffContext } from './model';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { NBDiff } from './NbDiff';
 import { PathExt } from '@jupyterlab/coreutils';
@@ -7,7 +7,7 @@ import { PathExt } from '@jupyterlab/coreutils';
 /**
  * A registry which maintains mappings of file extension to diff provider components.
  */
-export const DIFF_PROVIDER_REGISTRY = {
+const DIFF_PROVIDER_REGISTRY = {
   '.ipynb': NBDiff
 };
 
