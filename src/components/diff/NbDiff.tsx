@@ -89,7 +89,11 @@ export interface INBDiffState {
 }
 
 /**
+ * A React component to render the diff of a single Notebook file.
  *
+ * 1. It calls the `/nbdime/api/gitdiff` API on the server to get the diff model
+ * 2. Renders the Diff header
+ * 3. For each cell, invokes the CellDiff component
  */
 export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
   constructor(props: IDiffProps) {
@@ -184,7 +188,8 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
           .catch(reason => {
             // Handle error
             this.setState({
-              errorMessage: reason.message || ''
+              errorMessage:
+                reason.message || 'Unknown error. Please check the server log.'
             });
           });
       });
