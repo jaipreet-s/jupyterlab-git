@@ -21,32 +21,12 @@ export interface ISpecialRef {
   specialRef: 'WORKING' | 'INDEX';
 }
 
-const SPECIAL_REFS = {
-  WORKING: {
-    displayName: 'Changed'
-  },
-  INDEX: {
-    displayName: 'Staged'
-  }
-};
-
 /**
  * Utility method to get the string value of any type of ref.
  */
 export function getRefValue(ref: ISpecialRef | IGitRef): string {
   if ('specialRef' in ref) {
     return ref.specialRef;
-  } else {
-    return ref.gitRef;
-  }
-}
-
-/**
- * Utility method to get a user-friendly display text for a given ref.
- */
-export function getRefDisplayValue(ref: ISpecialRef | IGitRef): string {
-  if ('specialRef' in ref) {
-    return SPECIAL_REFS[ref.specialRef].displayName;
   } else {
     return ref.gitRef;
   }

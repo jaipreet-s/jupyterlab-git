@@ -1,8 +1,8 @@
 
+/*Styles imported from NBDime */
 .jp-git-diff-root .CodeMirror-merge {
     position: relative;
     white-space: pre;
-    /* style as jp-InputArea-editor: */
     border: var(--codemirror-border);
     border-radius: 0px;
     background: var(--jp-cell-editor-background);
@@ -101,7 +101,6 @@
     margin-right: auto;
 }
 
-/* Alternative for showing single cell when cells are equal */
 .jp-git-Notebook-diff .jp-Diff-unchanged {
     margin-left: 10%;
     width: 80%;
@@ -112,21 +111,17 @@
     width: 100%;
 }
 
-/* Match input border of unchanged cell source */
 .jp-git-Notebook-diff .jp-Diff-unchanged .CodeMirror-merge-pane-unchanged {
     border: var(--jp-border-width) solid var(--jp-private-notebook-cell-editor-border);
 }
 
-/* Do not use border between unchanged cells */
 .jp-git-Notebook-diff .jp-Diff-unchanged + .jp-Diff-unchanged > div:first-of-type {
     border: none;
 }
 
-/* We can float prompt left when unchanged */
 .jp-git-Notebook-diff .jp-Diff-unchanged .jp-Cellrow-executionCount {
     float: left;
 }
-
 
 .jp-git-Notebook-diff .jp-Metadata-diff {
     margin-bottom: 20px;
@@ -184,11 +179,6 @@
     display: none;
 }
 
-.jp-git-Notebook-diff .jp-Diff-added .jp-Cellrow-outputs,
-.jp-git-Notebook-diff .jp-Diff-deleted .jp-Cellrow-outputs {
-    border-top: var(--jp-nbdime-output-color1) solid 1pt;
-}
-
 .jp-git-Notebook-diff .jp-Diff-added .jp-Diff-unchanged {
     margin-left: 25%;
     width: 75%;
@@ -239,31 +229,25 @@
 }
 
 /* Color diff highlighting according to style vars */
-.jp-git-Notebook-diff .CodeMirror-merge-r-chunk { background-color: var(--jp-diff-deleted-color2); }
-.jp-git-Notebook-diff .CodeMirror-merge-r-chunk-start { border-top: 1px solid var(--jp-diff-deleted-color0); }
-.jp-git-Notebook-diff .CodeMirror-merge-r-chunk-end { border-bottom: 1px solid var(--jp-diff-deleted-color0); }
-.jp-git-Notebook-diff .CodeMirror-merge-r-connect { fill: var(--jp-diff-deleted-color2); stroke: var(--jp-diff-deleted-color0); stroke-width: 1px; }
-.jp-git-Notebook-diff .CodeMirror-merge-spacer { background-color: var(--jp-diff-deleted-color2); }
+.jp-git-Notebook-diff .CodeMirror-merge-r-chunk { background-color: var(--jp-git-diff-deleted-color); }
+.jp-git-Notebook-diff .CodeMirror-merge-r-connect { fill: var(--jp-git-diff-deleted-color); stroke: var(--jp-diff-deleted-color0); stroke-width: 1px; }
+.jp-git-Notebook-diff .CodeMirror-merge-spacer { background-color: var(--jp-git-diff-deleted-color); }
 
-.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-chunk { background-color: var(--jp-diff-added-color2); }
-.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-chunk-start { border-top: 1px solid var(--jp-diff-added-color0); }
-.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-chunk-end { border-bottom: 1px solid var(--jp-diff-added-color0); }
-.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-connect { fill: var(--jp-diff-added-color2); stroke: var(--jp-diff-added-color0); stroke-width: 1px; }
-.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-spacer { background-color: var(--jp-diff-added-color2); }
+.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-chunk { background-color: var(--jp-git-diff-added-color); }
+.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-r-connect { fill: var(--jp-git-diff-added-color); stroke: var(--jp-diff-added-color0); stroke-width: 1px; }
+.jp-git-Notebook-diff .CodeMirror-merge-pane-remote .CodeMirror-merge-spacer { background-color: var(--jp-git-diff-added-color); }
 
 
 .jp-git-Notebook-diff .jp-Diff-deleted .CodeMirror,
 .jp-git-Notebook-diff .jp-Diff-deleted .jp-Diff-renderedOutput,
 .jp-Cellrow-outputs .jp-Diff-twoway .jp-Diff-base {
-    background-color: var(--jp-diff-deleted-color2);
-    border: solid 1px var(--jp-diff-deleted-color0);
+    background-color: var(--jp-git-diff-deleted-color);
 }
 
 .jp-git-Notebook-diff .jp-Diff-added .CodeMirror,
 .jp-git-Notebook-diff .jp-Diff-added .jp-Diff-renderedOutput,
 .jp-Cellrow-outputs .jp-Diff-twoway .jp-Diff-remote {
-    background-color: var(--jp-diff-added-color2);
-    border: solid 1px var(--jp-diff-added-color0);
+    background-color: var(--jp-git-diff-added-color);
 }
 
 .jp-git-Notebook-diff .jp-Diff-added .CodeMirror-merge-pane-added,
@@ -279,10 +263,6 @@
     background-color: var(--jp-layout-color1);
     color: var(--jp-ui-font-color1);
 }
-
-/*
-Output mimetype selection:
-*/
 
 .jp-git-Notebook-diff .jp-Diff-outputPanel .jp-Diff-outputMenu {
     display: none;
@@ -320,10 +300,8 @@ Output mimetype selection:
 .jp-Diff-outputsContainer > .p-Widget:not(:last-child) {
     padding-bottom: 6px;
     min-height: 2em;
-    border-bottom: var(--jp-border-width) solid var(--jp-nbdime-output-color2);
 }
 
 .jp-git-Notebook-diff .jp-Diff-renderedOutput {
-    /* Ensure output is always large enough to show menu */
     min-height: 2em;
 }

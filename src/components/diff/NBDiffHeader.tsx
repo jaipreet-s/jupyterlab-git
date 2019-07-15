@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getRefDisplayValue, IDiffContext } from '../../diff';
+import { IDiffContext, IGitRef, ISpecialRef } from '../../diff';
 
 export interface INBDiffHeaderProps {
   path: string;
@@ -17,13 +17,35 @@ export class NBDiffHeader extends React.Component<INBDiffHeaderProps, {}> {
         <div className="jp-git-diff-header-path">{this.props.path}</div>
         <div className="jp-Diff-addremchunk jp-git-diff-header">
           <div className="jp-Diff-addedchunk">
-            Current: {getRefDisplayValue(this.props.diffContext.currentRef)}
+            Current:{' '}
+            {this.getRefDisplayValue(this.props.diffContext.currentRef)}
           </div>
           <div className="jp-Diff-removedchunk">
-            Previous: {getRefDisplayValue(this.props.diffContext.previousRef)}
+            Previous:{' '}
+            {this.getRefDisplayValue(this.props.diffContext.previousRef)}
           </div>
         </div>
       </div>
     );
+  }
+
+  /**
+   * Utility method to get a user-friendly display text for a given ref.
+   */
+  private getRefDisplayValue(ref: ISpecialRef | IGitRef): string {
+    const SPECIAL_REFS = {
+      WORKING: {
+        displayName: 'Changed'
+      },
+      INDEX: {
+        displayName: 'Staged'
+      }
+    };
+
+    if ('specialRef' in ref) {
+      return SPECIAL_REFS[ref.specialRef].displayName;
+    } else {
+      return ref.gitRef;
+    }
   }
 }

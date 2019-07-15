@@ -19,6 +19,8 @@
   --jp-icon-git-clone-disabled: url('./images/git-clone-icon-disabled.svg');
   --jp-icon-git-push-disabled: url('./images/git-clone-icon-disabled.svg');
   --jp-icon-git-pull-disabled: url('./images/git-clone-icon-disabled.svg');
+  --jp-git-diff-deleted-color: rgba(255, 193, 193, 0.5);
+  --jp-git-diff-added-color: rgba(201, 243, 194, 0.5);
 }
 
 [data-theme-light="true"] {
@@ -93,14 +95,14 @@
 }
 
 .jp-git-diff-header > .jp-Diff-addedchunk {
-  background: #E1F4DD;
+  background: var(--jp-git-diff-added-color);
   border: 1px solid #AAD49D;
   box-sizing: border-box;
   padding: 5px;
 }
 
 .jp-git-diff-header > .jp-Diff-removedchunk {
-  background: #F4DDDD;
+  background: var(--jp-git-diff-deleted-color);
   border: 1px solid #D99D9D;
   box-sizing: border-box;
   padding: 5px
@@ -134,7 +136,6 @@
   font-weight: 500;
   color: var(--jp-ui-font-color1);
   background-color: transparent;
-  border: 1px solid var(--jp-nbdime-output-color2);
   text-decoration: none;
   transition: background-color 0.1s ease;
   margin-left: 5px;

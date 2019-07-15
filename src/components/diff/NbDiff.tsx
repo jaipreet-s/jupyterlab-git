@@ -3,7 +3,7 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { ServerConnection } from '@jupyterlab/services/lib/serverconnection';
 import { IDiffEntry } from 'nbdime/lib/diff/diffentries';
 import { CellDiffModel, NotebookDiffModel } from 'nbdime/lib/diff/model';
-import { CellDiffWidget, NotebookDiffWidget } from 'nbdime/lib/diff/widget';
+import { CellDiffWidget } from 'nbdime/lib/diff/widget';
 import * as React from 'react';
 import { RefObject } from 'react';
 import { httpGitRequest } from '../../git';
