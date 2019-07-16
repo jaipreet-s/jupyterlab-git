@@ -27,7 +27,7 @@ export interface ICellDiffProps {
  * is mounted, the PhosporJS widget is created and attached to the Ref.
  */
 export class CellDiff extends React.Component<ICellDiffProps, {}> {
-  private unmodifiedCellRef: RefObject<HTMLDivElement> = React.createRef<
+  private unAddedOrRemovedRef: RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
   private addedRef: RefObject<HTMLDivElement> = React.createRef<
@@ -51,7 +51,7 @@ export class CellDiff extends React.Component<ICellDiffProps, {}> {
         this.props.renderMime,
         this.props.mimeType
       );
-      this.unmodifiedCellRef.current.appendChild(widget.node);
+      this.unAddedOrRemovedRef.current.appendChild(widget.node);
     } else {
       for (let j = 0; j < chunk.length; j++) {
         const cell = chunk[j];
@@ -71,7 +71,7 @@ export class CellDiff extends React.Component<ICellDiffProps, {}> {
     return (
       <React.Fragment>
         {chunk.length === 1 && !(chunk[0].added || chunk[0].deleted) ? (
-          <div ref={this.unmodifiedCellRef} />
+          <div ref={this.unAddedOrRemovedRef} />
         ) : (
           <div className={'jp-Diff-addremchunk'}>
             <div className={'jp-Diff-addedchunk'} ref={this.addedRef} />
@@ -173,7 +173,8 @@ export class NBDiff extends React.Component<IDiffProps, INBDiffState> {
             if (response.status !== 200) {
               // Handle error
               this.setState({
-                errorMessage: data.message
+                errorMessage:
+                  data.message || 'Unknown error. Please check the server log.'
               });
             } else {
               // Handle response
