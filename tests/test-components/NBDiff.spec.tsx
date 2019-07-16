@@ -92,7 +92,7 @@ function createTestResponse(
   json: Promise<any>
 ): Promise<Response> {
   const testResponse: Response = {
-    status: 401,
+    status: status,
     json: () => json,
     headers: Headers as any,
     ok: true,

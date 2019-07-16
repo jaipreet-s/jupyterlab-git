@@ -19,7 +19,6 @@ describe('NBDiffHeader', () => {
 
     // When
     const node = shallow(<NBDiffHeader {...props} />);
-    // node.update();
 
     // Then
     expect(node.find('.jp-git-diff-header-path').text()).toContain(
