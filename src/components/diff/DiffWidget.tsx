@@ -25,7 +25,7 @@ export class DiffWidget extends Widget {
     this._path = path;
     this._gitContext = gitContext;
 
-    this.title.label = path;
+    this.title.label = PathExt.basename(path);
     this.title.iconClass = style({
       backgroundImage: 'var(--jp-icon-diff)'
     });

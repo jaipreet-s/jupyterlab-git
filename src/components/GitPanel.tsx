@@ -245,6 +245,7 @@ export class GitPanel extends React.Component<
                 app={this.props.app}
                 refresh={this.refresh}
                 diff={this.props.diff}
+                renderMime={this.props.renderMime}
               />
               <PastCommits
                 currentFileBrowserPath={this.state.currentFileBrowserPath}
