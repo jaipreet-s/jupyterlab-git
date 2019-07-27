@@ -27,6 +27,7 @@ import '../style/variables.css';
 import '../style/diff.css';
 import { GitClone } from './gitClone';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { IThemeManager } from '@jupyterlab/apputils';
 
 export const EXTENSION_ID = 'jupyter.extensions.git_plugin';
 
@@ -47,7 +48,8 @@ const plugin: JupyterLabPlugin<IGitExtension> = {
     IMainMenu,
     ILayoutRestorer,
     IFileBrowserFactory,
-    IRenderMimeRegistry
+    IRenderMimeRegistry,
+    IThemeManager
   ],
   provides: IGitExtension,
   activate,
@@ -67,14 +69,16 @@ export class GitExtension implements IGitExtension {
     app: JupyterLab,
     restorer: ILayoutRestorer,
     factory: IFileBrowserFactory,
-    renderMime: IRenderMimeRegistry
+    renderMime: IRenderMimeRegistry,
+    themeManager: IThemeManager
   ) {
     this.app = app;
     this.gitPlugin = new GitWidget(
       app,
       { manager: app.serviceManager },
       this.performDiff.bind(this),
-      renderMime
+      renderMime,
+      themeManager
     );
     this.gitPlugin.id = 'jp-git-sessions';
     this.gitPlugin.title.iconClass = `jp-SideBar-tabIcon ${gitTabStyle}`;
@@ -119,10 +123,17 @@ function activate(
   mainMenu: IMainMenu,
   restorer: ILayoutRestorer,
   factory: IFileBrowserFactory,
-  renderMime: IRenderMimeRegistry
+  renderMime: IRenderMimeRegistry,
+  themeManager: IThemeManager
 ): IGitExtension {
   const { commands } = app;
-  let gitExtension = new GitExtension(app, restorer, factory, renderMime);
+  let gitExtension = new GitExtension(
+    app,
+    restorer,
+    factory,
+    renderMime,
+    themeManager
+  );
 
   const category = 'Git';
   // Rank has been chosen somewhat arbitrarily to give priority to the running

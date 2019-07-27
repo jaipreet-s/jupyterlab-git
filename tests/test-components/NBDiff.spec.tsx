@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
 import 'jest';
+import * as React from 'react';
 import { IDiffProps } from '../../src/components/diff/Diff';
 import { CellDiff, NBDiff } from '../../src/components/diff/NbDiff';
-import * as diffResponse from '../test-components/data/diffResponse.json';
-import { httpGitRequest } from '../../src/git';
 import { NBDiffHeader } from '../../src/components/diff/NBDiffHeader';
+import { httpGitRequest } from '../../src/git';
+import * as diffResponse from '../test-components/data/diffResponse.json';
 
 jest.mock('../../src/git');
 
@@ -14,6 +14,7 @@ describe('NBDiff', () => {
     // Given
     const props: IDiffProps = {
       path: '/path/to/File.ipynb',
+      topRepoPath: '/top/repo/path',
       diffContext: {
         currentRef: { specialRef: 'WORKING' },
         previousRef: { gitRef: '83baee' }
@@ -51,6 +52,7 @@ describe('NBDiff', () => {
     // Given
     const props: IDiffProps = {
       path: '/path/to/File.ipynb',
+      topRepoPath: '/top/repo/path',
       diffContext: {
         currentRef: { specialRef: 'WORKING' },
         previousRef: { gitRef: '83baee' }

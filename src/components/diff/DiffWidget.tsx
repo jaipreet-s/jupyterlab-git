@@ -4,25 +4,36 @@ import * as ReactDOM from 'react-dom';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 import { getRefValue, IDiffContext } from './model';
-import { Diff, isDiffSupported, RenderMimeProvider } from './Diff';
+import {
+  Diff,
+  isDiffSupported,
+  RenderMimeProvider,
+  ThemeManagerProvider
+} from './Diff';
 import { JupyterLab } from '@jupyterlab/application';
-import { showDialog } from '@jupyterlab/apputils';
+import { showDialog, IThemeManager } from '@jupyterlab/apputils';
 import { PathExt } from '@jupyterlab/coreutils';
 import { style } from 'typestyle';
 
 export class DiffWidget extends Widget {
   private readonly _renderMime: IRenderMimeRegistry;
+  private readonly _themeManager: IThemeManager;
   private readonly _path: string;
+  private readonly _topRepoPath: string;
   private readonly _diffContext: IDiffContext;
 
   constructor(
     renderMime: IRenderMimeRegistry,
+    themeManager: IThemeManager,
     path: string,
+    topRepoPath: string,
     gitContext: IDiffContext
   ) {
     super();
     this._renderMime = renderMime;
+    this._themeManager = themeManager;
     this._path = path;
+    this._topRepoPath = topRepoPath;
     this._diffContext = gitContext;
 
     this.title.label = PathExt.basename(path);
@@ -34,7 +45,13 @@ export class DiffWidget extends Widget {
 
     ReactDOM.render(
       <RenderMimeProvider value={this._renderMime}>
-        <Diff path={this._path} diffContext={this._diffContext} />
+        <ThemeManagerProvider value={this._themeManager}>
+          <Diff
+            path={this._path}
+            topRepoPath={this._topRepoPath}
+            diffContext={this._diffContext}
+          />
+        </ThemeManagerProvider>
       </RenderMimeProvider>,
       this.node
     );
@@ -44,7 +61,13 @@ export class DiffWidget extends Widget {
     ReactDOM.unmountComponentAtNode(this.node);
     ReactDOM.render(
       <RenderMimeProvider value={this._renderMime}>
-        <Diff path={this._path} diffContext={this._diffContext} />
+        <ThemeManagerProvider value={this._themeManager}>
+          <Diff
+            path={this._path}
+            topRepoPath={this._topRepoPath}
+            diffContext={this._diffContext}
+          />
+        </ThemeManagerProvider>
       </RenderMimeProvider>,
       this.node
     );
@@ -62,9 +85,11 @@ export class DiffWidget extends Widget {
  */
 export function openDiffView(
   path: string,
+  topRepoPath: string,
   app: JupyterLab,
   diffContext: IDiffContext,
-  renderMime: IRenderMimeRegistry
+  renderMime: IRenderMimeRegistry,
+  themeManager: IThemeManager
 ) {
   if (isDiffSupported(path)) {
     const id = `nbdiff-${path}-${getRefValue(diffContext.currentRef)}`;
@@ -78,7 +103,13 @@ export function openDiffView(
       mainAreaItem = mainAreaItems.next();
     }
     if (!mainAreaItem) {
-      const nbDiffWidget = new DiffWidget(renderMime, path, diffContext);
+      const nbDiffWidget = new DiffWidget(
+        renderMime,
+        themeManager,
+        path,
+        topRepoPath,
+        diffContext
+      );
       nbDiffWidget.id = id;
       app.shell.addToMainArea(nbDiffWidget);
       app.shell.activateById(nbDiffWidget.id);
